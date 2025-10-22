@@ -1,0 +1,119 @@
+<div mat-dialog-content class="modal-container">
+  <!-- Header -->
+  <div class="modal-header">
+    <button mat-icon-button (click)="onClose()" class="back-button">
+      <mat-icon>arrow_back</mat-icon>
+    </button>
+    <button mat-icon-button (click)="onClose()" class="close-button">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <div class="search-container">
+    <ion-grid>
+      <!-- Título -->
+      <ion-row>
+        <ion-col size="12">
+          <div class="section-header">
+            <h2>Búsqueda de paciente</h2>
+          </div>
+        </ion-col>
+      </ion-row>
+
+      <!-- Campo de búsqueda -->
+      <ion-row>
+        <ion-col size="12">
+          <mat-form-field appearance="fill" class="search-field">
+            <mat-label>Buscar paciente por nombre</mat-label>
+            <input
+              matInput
+              [formControl]="searchControl"
+              (focus)="onFocus()"
+              (blur)="onBlur()"
+              placeholder="Escribe el nombre del paciente"
+            />
+            <mat-icon matSuffix>search</mat-icon>
+          </mat-form-field>
+        </ion-col>
+      </ion-row>
+
+      <!-- Escenario 0: estado inicial (input vacío, sin focus) -->
+      <ion-row *ngIf="!searchControl.value && !pacienteSeleccionado && !isFocused">
+        <ion-col size="12">
+          <div class="initial-state">
+            <mat-icon class="search-icon">search</mat-icon>
+            <p>Comienza a escribir para buscar pacientes</p>
+          </div>
+        </ion-col>
+      </ion-row>
+
+      <!-- Escenario 1: focus en input vacío → mostrar lista general de pacientes -->
+      <ion-row *ngIf="isFocused && !searchControl.value && !pacienteSeleccionado">
+        <ion-col size="12">
+          <div class="results-container">
+            <h3 class="results-header">Todos los pacientes:</h3>
+            <mat-list class="patients-list">
+              <div *ngFor="let paciente of pacientes; let last = last">
+                <mat-list-item class="patient-item" (click)="onPacienteSelected(paciente)">
+                  <div class="patient-info">
+                    <div class="patient-name">{{ getNombreCompleto(paciente) }}</div>
+                    <div class="patient-details">{{ getEdadTexto(paciente.edad) }}</div>
+                  </div>
+                  <mat-icon class="select-icon">chevron_right</mat-icon>
+                </mat-list-item>
+                <mat-divider *ngIf="!last"></mat-divider>
+              </div>
+            </mat-list>
+          </div>
+        </ion-col>
+      </ion-row>
+
+      <!-- Escenario 2: hay texto en el buscador y hay resultados -->
+      <ion-row *ngIf="searchControl.value && pacientesFiltrados.length > 0 && !pacienteSeleccionado">
+        <ion-col size="12">
+          <div class="results-container">
+            <h3 class="results-header">Selecciona el paciente:</h3>
+            <mat-list class="patients-list">
+              <div *ngFor="let paciente of pacientesFiltrados; let last = last">
+                <mat-list-item class="patient-item" (click)="onPacienteSelected(paciente)">
+                  <div class="patient-info">
+                    <div class="patient-name">
+                      {{ getNombreCompleto(paciente) }}
+                    </div>
+                    <div class="patient-details">
+                      {{ getEdadTexto(paciente.edad) }}
+                    </div>
+                  </div>
+                  <mat-icon class="select-icon">keyboard_arrow_right</mat-icon>
+                </mat-list-item>
+                <mat-divider *ngIf="!last"></mat-divider>
+              </div>
+            </mat-list>
+          </div>
+        </ion-col>
+      </ion-row>
+
+      <!-- Escenario 2 (sin resultados): hay texto pero no se encontraron pacientes -->
+      <ion-row *ngIf="searchControl.value && pacientesFiltrados.length === 0 && !pacienteSeleccionado">
+        <ion-col size="12">
+          <div class="no-results">
+            <mat-icon class="no-results-icon">search_off</mat-icon>
+            <p>No se encontraron pacientes con ese nombre</p>
+            <small>Intenta con otro término de búsqueda</small>
+          </div>
+        </ion-col>
+      </ion-row>
+
+      <!-- Escenario 3: paciente seleccionado -->
+      <ion-row *ngIf="pacienteSeleccionado">
+        <ion-col size="12">
+          <div class="selected-patient">
+            <button matButton="filled" (click)="comenzarReceta()">
+              Comenzar receta
+            </button>
+          </div>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </div>
+</div>

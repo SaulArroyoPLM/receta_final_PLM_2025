@@ -1,0 +1,59 @@
+<!-- medicamentos-cards.component.html -->
+<ion-grid class="medicamentos_master" >
+  
+
+  <!-- Medicamentos cards -->
+  <ion-row *ngIf="!loading" class="pt-1 pb-1">
+    <ion-col 
+      *ngFor="let medicamento of medicamentos; trackBy: trackByMedicamento"
+      size="12"
+  size-sm="6"
+  size-md="4"
+  size-lg="4"
+  size-xl="4"
+      class="pt-2 pb-2"
+    >
+      <ion-card 
+        class="card-medicamento" 
+  role="button" 
+  tabindex="0"
+  (click)="navigateToMedicamento(medicamento)"
+  (keydown)="onKeyPress($event, medicamento)"
+      >
+        <div class="imagen-container">
+  <img [src]="medicamento.imagen"
+            class="imagen-medicamento" 
+            [src]="medicamento.imagen" 
+            [alt]="medicamento.marca + ' ' + medicamento.solucion"
+            loading="lazy"
+          >
+        </div>
+        
+        <ion-card-content class="contenido-container">
+          <div class="header-medicamento">
+            <span class="marca">Marca: {{ medicamento.marca }}</span>
+            <span class="solucion">{{ medicamento.solucion }}</span>
+          </div>
+          
+          <div class="chinoin">{{ medicamento.chinoin }}</div>
+          
+          <div class="info-medicamento">
+            <p class="sustancia">Sustancia: {{ medicamento.sustancia }}</p>
+            <p class="indicacion">{{ medicamento.indicacion }}</p>
+            <p class="dosis">{{ medicamento.dosis }}</p>
+          </div>
+        </ion-card-content>
+      </ion-card>
+    </ion-col>
+  </ion-row>
+
+  <!-- Empty state -->
+  <ion-row *ngIf="!loading && medicamentos.length === 0">
+    <ion-col size="12" class="text-center py-5">
+      <div class="empty-state">
+        <h3>No se encontraron medicamentos</h3>
+        <p class="text-muted">Intenta con otra letra o ajusta los filtros de búsqueda</p>
+      </div>
+    </ion-col>
+  </ion-row>
+</ion-grid>

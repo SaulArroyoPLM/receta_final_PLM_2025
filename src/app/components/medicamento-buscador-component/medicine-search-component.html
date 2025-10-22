@@ -1,0 +1,74 @@
+<div class="medicine-search-container">
+  <mat-form-field class="search-field" appearance="fill">
+    <!-- El label solo se mostrará en desktop, en móvil se oculta con CSS -->
+    <mat-label>Nombre del medicamento, sustancia, CIE-11</mat-label>
+    <input 
+      matInput 
+      placeholder="Buscar medicamento, sustancia o CIE-11" 
+      [formControl]="searchControl"
+      [matAutocomplete]="auto"
+      autocomplete="off">
+
+    <!-- Botón para buscar cuando hay texto -->
+    @if (searchControl.value) {
+      <button 
+        matSuffix 
+        mat-icon-button 
+        aria-label="Buscar" 
+        (click)="ejecutarBusqueda()"
+        type="button">
+        <mat-icon>search</mat-icon>
+      </button>
+    }
+
+    <!-- Botón para limpiar el campo -->
+    @if (searchControl.value) {
+      <button 
+        matSuffix 
+        mat-icon-button 
+        aria-label="Limpiar" 
+        (click)="limpiarBusqueda()"
+        type="button"
+        style="margin-right: 40px;">
+        <mat-icon>clear</mat-icon>
+      </button>
+    }
+  </mat-form-field>
+
+  
+
+  <mat-autocomplete 
+    #auto="matAutocomplete" 
+    [displayWith]="displayFn"
+    class="medicine-autocomplete"
+    autoActiveFirstOption>
+    
+    @for (medicamento of filteredMedicamentos | async; track medicamento.id) {
+      <mat-option 
+        [value]="medicamento"
+        (click)="onMedicamentoSelected(medicamento)"
+        class="medicine-option">
+        
+        <div class="medicine-item">
+          <div class="medicine-icon">
+            <img 
+              [src]="medicamento.imagen" 
+              [alt]="medicamento.nombre ?? medicamento.marca ?? 'Medicamento'"
+              loading="lazy" />
+          </div>
+          
+          <div class="medicine-info">
+            <div class="medicine-name">{{ medicamento.nombre ?? medicamento.marca }}</div>
+            <div class="medicine-presentation">{{ medicamento.presentacion ?? medicamento.solucion }}</div>
+            <div class="medicine-composition">{{ medicamento.composicion ?? medicamento.sustancia }}</div>
+          </div>
+        </div>
+      </mat-option>
+    }
+  </mat-autocomplete>
+<button class="consulta_bts"  mat-stroked-button aria-label="Ver todo">
+  <mat-icon>visibility</mat-icon>
+  <span class="label-text">Ver todo</span>
+</button>
+
+</div>
