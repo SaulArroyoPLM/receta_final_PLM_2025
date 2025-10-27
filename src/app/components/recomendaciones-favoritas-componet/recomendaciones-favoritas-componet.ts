@@ -22,7 +22,7 @@ interface RecomendacionesFavorita {
     MatMenuModule // ¡Importante! Agregar MatMenuModule a los imports
   ],
   templateUrl: './recomendaciones-favoritas-componet.html',
-  styleUrl: './recomendaciones-favoritas-componet.css'
+  styleUrl: './recomendaciones-favoritas-componet.scss'
 })
 export class RecomendacionesFavoritaComponet implements OnInit {
   displayedColumns: string[] = ['icono', 'nombre', 'receta_acciones'];

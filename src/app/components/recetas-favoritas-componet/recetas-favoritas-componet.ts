@@ -22,7 +22,7 @@ interface RecetaFavorita {
     MatMenuModule // ¡Importante! Agregar MatMenuModule a los imports
   ],
   templateUrl: './recetas-favoritas-componet.html',
-  styleUrls: ['./recetas-favoritas-componet.css']
+  styleUrls: ['./recetas-favoritas-componet.scss']
 })
 export class RecetasFavoritasComponent implements OnInit {
   displayedColumns: string[] = ['icono', 'nombre', 'receta_acciones'];

@@ -30,7 +30,7 @@ interface Paciente {
   selector: 'app-patient-search',
   standalone: true,
   templateUrl: './patient-search-component.html',
-  styleUrls: ['./patient-search-component.css'],
+  styleUrls: ['./patient-search-component.scss'],
   imports: [
     CommonModule, 
     MatTableModule, 
