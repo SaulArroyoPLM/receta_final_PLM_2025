@@ -1,4 +1,8 @@
-
+:root {
+  --sidebar-width-expanded: 280px;
+  --sidebar-width-collapsed: 60px;
+  --transition-normal: 0.3s ease;
+}
 /* ===== HEADER MÓVIL ===== */
 .mobile-header-wrapper {
   position: fixed;
@@ -548,10 +552,16 @@
   padding: 12px 20px;
   color: #707070;
   text-decoration: none;
-  transition: all 0.2s ease;
+  transition: all var(--transition-normal);
   border-left: 3px solid transparent;
+  &.collapsed {
+    justify-content: center; /* Centra solo el ícono al colapsar */
+    padding: 12px;
+    .menu-label {
+      display: none; /* Oculta el texto al colapsar */
+    }
+  }
 }
-
 .menu-item:hover {
   background: #F4F8FD;
   border-left-color: #3498db;
@@ -570,6 +580,9 @@
   height: 24px;
   margin-right: 12px;
   object-fit: contain;
+  &.collapsed {
+    margin-right: 0; /* Sin margen cuando colapsado */
+  }
 }
 
 .menu-label {
@@ -811,29 +824,31 @@
 
 /* ===== SIDEBAR DESKTOP (NO MODIFICADO) ===== */
 .desktop-sidebar {
-  position: fixed;
+  position: absolute; /* 👈 CAMBIO DE FIXED A ABSOLUTE */
   top: 0;
   left: 0;
   bottom: 0;
-  width: 280px;
+  height: 100%;
+  width: var(--sidebar-width-expanded);
   background: #2c3e50;
   color: white;
-  transition: width 0.3s ease;
-  z-index: 1000;
+  transition: width var(--transition-normal);
+  z-index: 999;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
 }
 
 .desktop-sidebar.collapsed {
-  width: 80px;
+  width: var(--sidebar-width-collapsed);
 }
 
 .toggle-btn {
   position: absolute;
   top: 20px;
-  right: -15px;
+  right: 0px;
   background: white;
-  color: black;
+  color: #1458D9;
   border: none;
   width: 30px;
   height: 30px;
@@ -1152,7 +1167,7 @@
 /* Estilos para pantallas grandes (1930px en adelante, como 2K o 4K) */
 @media (min-width: 1820px) {
   .desktop-sidebar {
-    width: 320px;
+    width: 280px;
   }
 }
 

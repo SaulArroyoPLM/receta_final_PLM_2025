@@ -241,11 +241,13 @@
        *ngIf="isDesktopS || isDesktopL">
 
   <!-- Botón colapsar -->
-  <button class="toggle-btn"
-          (click)="toggleSidebar()"
-          [title]="sidebarOpen ? 'Colapsar menú' : 'Expandir menú'">
-    <mat-icon>{{ sidebarOpen ? 'chevron_left' : 'chevron_right' }}</mat-icon>
-  </button>
+<button 
+  class="toggle-btn" 
+  (click)="toggleSidebar()" 
+  mat-icon-button 
+  aria-label="{{ sidebarCollapsed ? 'Expandir menú' : 'Colapsar menú' }}">
+  <mat-icon>{{ sidebarCollapsed ? 'chevron_right' : 'chevron_left' }}</mat-icon>
+</button>
 
   <div class="sidebar-content">
     <!-- Header con logo y consultorio -->

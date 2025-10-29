@@ -104,19 +104,6 @@ export class PatientSearchComponent implements OnInit {
         titulo: 'Bronquitis aguda | Síndrome gripal',
       }
     },
-    { 
-      id: 4,
-      nombre: 'Ana Patricia', 
-      primerApellido: 'López', 
-      segundoApellido: 'Martínez', 
-      sexo: 'F', 
-      edad: 42,
-      diagnostico: {
-         header: 'Última receta emitida',
-        fecha: '15/07/2025',
-        titulo: 'Artritis reumatoide | Síndrome de Sjögren',
-      }
-    }
   ];
 
   constructor(private breakpointObserver: BreakpointObserver) {}

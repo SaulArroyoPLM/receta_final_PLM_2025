@@ -86,9 +86,10 @@ export class MenuMasterComponent implements OnInit, OnChanges, AfterViewInit, On
   // === INPUTS Y OUTPUTS BASES ===
   @Input() selectedConsultorio = 'Consultorio 1';
   @Input() sidebarOpen = true;
+  @Input() sidebarCollapsed = false; // Añadido como entrada
 
   @Output() consultorioSeleccionado = new EventEmitter<string>();
-  @Output() sidebarToggle = new EventEmitter<boolean>();
+ @Output() sidebarToggle = new EventEmitter<{ open: boolean; collapsed: boolean }>(); // Cambiado a objeto
   @Output() menuItemClick = new EventEmitter<void>();
   @Output() nuevaRecetaClick = new EventEmitter<void>();
 
@@ -316,12 +317,25 @@ ngOnChanges(changes: import('@angular/core').SimpleChanges) {
   }
 
   // === ACCIONES ===
-  toggleSidebar() {
-    if (this.isDesktopS || this.isDesktopL) {
-      this.sidebarOpen = !this.sidebarOpen;
-      this.sidebarToggle.emit(this.sidebarOpen);
-    }
+toggleSidebar() {
+  if (this.isDesktopS || this.isDesktopL) {
+    this.sidebarCollapsed = !this.sidebarCollapsed; // 👈 CAMBIAR EL ESTADO
+    this.sidebarOpen = !this.sidebarCollapsed; // 👈 SINCRONIZAR
+    
+    console.log('Toggle Sidebar - Open:', this.sidebarOpen, 'Collapsed:', this.sidebarCollapsed);
+    
+    // Emitir AMBOS estados
+    this.sidebarToggle.emit({ 
+      open: this.sidebarOpen, 
+      collapsed: this.sidebarCollapsed 
+    });
   }
+}
+onSidebarToggle(event: { open: boolean; collapsed: boolean }): void {
+  this.sidebarOpen = event.open;
+  this.sidebarCollapsed = event.collapsed;
+  console.log('Received Sidebar Toggle - Open:', this.sidebarOpen, 'Collapsed:', this.sidebarCollapsed);
+}
 
   toggleMobileDrawer() {
     if (this.isMobile || this.isTablet || this.isLaptopSmall) {

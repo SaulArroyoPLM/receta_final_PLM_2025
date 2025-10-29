@@ -77,10 +77,10 @@ export class AuthMockService {
    */
   private agregarUsuarioPrueba(): void {
     const usuarioPrueba: UsuarioRegistro = {
-      nombre: 'Elias',
-      segundoNombre: 'Gamiliel',
-      primerApellido: 'Arroyo',
-      segundoApellido: 'Neri',
+      nombre: 'Ramiro',
+      segundoNombre: 'Fernando',
+      primerApellido: 'Ferrandez',
+      segundoApellido: 'Ledezma',
       fechaNacimiento: new Date('1985-05-15'),
       estado: 'Ciudad de México',
       celular: '5512345678',

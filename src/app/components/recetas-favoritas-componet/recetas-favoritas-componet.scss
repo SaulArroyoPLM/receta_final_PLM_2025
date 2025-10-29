@@ -91,6 +91,29 @@
 .delete-option .mat-icon {
   color: #f44336 !important;
 }
+::ng-deep  .mat-mdc-card-content{
+  padding: 0px;
+}
+::ng-deep .mat-expansion-panel-header-title, .mat-expansion-panel-header-description {
+    display: flex;
+    flex-grow: 1;
+     flex-basis: 0 !important;
+    margin-right: 16px;
+    align-items: center;
+}
+::ng-deep .mat-mdc-card-header {
+  padding: 0px;
+}
+::ng-deep .mat-mdc-card-outlined {
+  background-color: white;
+  border: none;
+  box-shadow: none;
+
+}
+::ng-deep  .mat-expansion-panel:not([class*=mat-elevation-z]){
+    box-shadow: none !important;
+    background-color: white ;
+}
 
 /* Estilos para el menú desplegable */
 ::ng-deep .mat-mdc-menu-panel {

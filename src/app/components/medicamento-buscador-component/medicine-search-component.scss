@@ -1,5 +1,5 @@
 .medicine-search-container {
-  padding: 20px;
+  padding: 16px;
   border-radius: 10px;
   display: flex;
   align-items: center;
@@ -44,6 +44,10 @@ button[mat-icon-button] {
 
 ::ng-deep .mat-mdc-text-field-wrapper:hover .mat-mdc-form-field-focus-overlay {
   background: white;
+}
+
+::ng-deep  .mat-mdc-card-content:last-child {
+  padding-bottom: 0px;
 }
 
 .medicine-autocomplete {

@@ -1,9 +1,3 @@
-/* ====================================
-   IONIC + ANGULAR MATERIAL DASHBOARD
-   Adaptado a tu HTML actual
-   ==================================== */
-
-/* ===== VARIABLES CSS ===== */
 :root {
   --primary-color: #007bff;
   --accent-color: #28a745;
@@ -22,11 +16,11 @@
   --space-xl: 32px;
 
   --header-height: 56px;
-  --sidebar-width-collapsed: 60px;
+  --sidebar-width-collapsed: 80px;
   --sidebar-width-expanded: 280px;
-  --notifications-width-sm: 280px;
-  --notifications-width-md: 320px;
-  --notifications-width-lg: 360px;
+  --notifications-width-sm: 250px;
+  --notifications-width-md: 300px;
+  --notifications-width-lg: 350px;
 
   --shadow-1: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
   --shadow-2: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
@@ -36,7 +30,7 @@
   --border-radius-lg: 12px;
 
   --transition-fast: 0.15s ease;
-  --transition-normal: 0.3s ease;
+  --transition-normal: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   --transition-slow: 0.5s ease;
 
   --z-header: 200;
@@ -47,7 +41,7 @@
 * {
   box-sizing: border-box;
   margin: 0;
-  padding: 0;
+  padding-bottom: 10px;
 }
 
 html, body, ion-app, ion-content {
@@ -61,78 +55,37 @@ html, body, ion-app, ion-content {
 ion-content.main-app-content {
   --background: var(--background-color);
   padding: 0;
+  overflow: hidden;
 }
 
-/* ===== DASHBOARD GRID ===== */
+/* ===== DASHBOARD GRID DINÁMICO ===== */
 .app-layout-grid {
   display: grid;
-  grid-template-columns: 1fr 5fr 1fr; /* 20% sidebar, 60% main, 20% notifications */
-  grid-template-areas: "sidebar main notifications";
-  gap: 2rem;
-  height: 100%;
-    background: linear-gradient(135deg, #F1F8FF 0%, #E3F2FD 100%);
-}
-.welcome-section mat-card,
-.search-section mat-card,
-.notifications-card mat-card,
-.favorites-grid mat-card {
-  box-shadow: none; /* Quita sombra */
-  border: none;     /* Quita borde si existe */
-  margin-bottom: 1rem;
-}
-.search-section mat-card {
-  background-color: white;
-}
-.favorites-grid mat-card{
-  margin-bottom: 0;
-}
-
-.welcome-section mat-card-content,
-.search-section mat-card-content,
-.notifications-card mat-card-content {
-  border: none;     
-}
-
-.welcome-section .welcome-title {
-  text-align: center;
-  color: #212529;
-  font-size: 1.5rem;
-  margin: 0px;
-  display: flex;
-  justify-content: center;
   gap: 1rem;
-
-  .doctor-name{
-    display: flex;
-    gap: .5rem;
-  }
-
-  
-@media (max-width: 768px) {
-  flex-direction: column;
-  align-items: center;
-  gap: 0;
+  height: 100vh;
+  background: linear-gradient(135deg, #F1F8FF 0%, #E3F2FD 100%);
+  transition: grid-template-columns var(--transition-normal);
+  overflow: hidden;
 }
+.mat-mdc-card-header {
+  padding: 0px;
 }
-
-.doctor-name{
-  color: #007bff;
-}
-
-
-
+/* ===== SIDEBAR AREA (contiene el menu-master) ===== */
 .sidebar-area {
   grid-area: sidebar;
-  background: var(--surface-color);
-  box-shadow: var(--shadow-2);
-  overflow-y: auto;
+  background: transparent;
+  overflow: visible;
+  position: relative;
+  z-index: 100;
 }
 
+/* ===== MAIN CONTENT ===== */
 .main-content-area {
   grid-area: main;
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  background: transparent;
 }
 
 .scrollable-content {
@@ -144,9 +97,56 @@ ion-content.main-app-content {
 .scrollable-content::-webkit-scrollbar {
   width: 6px;
 }
+
 .scrollable-content::-webkit-scrollbar-thumb {
   background: rgba(0,0,0,0.2);
   border-radius: 3px;
+}
+
+/* ===== CARDS ===== */
+.welcome-section mat-card,
+.search-section mat-card,
+.notifications-card mat-card,
+.favorites-grid mat-card {
+  box-shadow: none;
+  border: none;
+  margin-bottom: 1rem;
+}
+
+.search-section mat-card {
+  background-color: white;
+}
+
+.favorites-grid mat-card {
+  margin-bottom: 0;
+}
+
+
+.favorites-grid .favorites-card_receta {
+  background: none;
+  padding-bottom: 0px !important;
+}
+
+
+
+
+.welcome-section .welcome-title {
+  text-align: center;
+  color: #212529;
+  font-size: 1.5rem;
+  margin: 0;
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.welcome-section .welcome-title .doctor-name {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.doctor-name {
+  color: var(--primary-color);
 }
 
 /* ===== MOBILE HEADER ===== */
@@ -161,7 +161,7 @@ ion-content.main-app-content {
   color: #fff;
 }
 
-.mobile-toolbar .mobile-logo {
+.mobile-logo {
   height: 32px;
 }
 
@@ -169,53 +169,91 @@ ion-content.main-app-content {
   flex: 1;
 }
 
-/* ===== CARDS ===== */
+/* ===== MATERIAL CARDS ===== */
 mat-card {
   background: var(--card-background);
   border-radius: var(--border-radius-md);
   box-shadow: var(--shadow-1);
-  margin-bottom: 0px;
+  margin-bottom: var(--space-md);
+  border-width: 0px;
+
 }
 
 mat-card:hover {
-  
   box-shadow: var(--shadow-2);
 }
 
 mat-card-header {
-  display: flex;
+  display: none;
   align-items: center;
   gap: var(--space-sm);
-  display: none;
+  padding: 0;
+  
 }
 
 mat-card-title mat-icon {
   vertical-align: middle;
   margin-right: var(--space-xs);
 }
-
-/* ===== FAVORITES GRID ===== */
-.favorites-grid {
+.accordion_favoritas{
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   gap: 1rem;
+  margin-bottom: 0px !important;
 }
+
+
 
 /* ===== NOTIFICATIONS PANEL ===== */
 .notifications-panel {
   grid-area: notifications;
-  background: white;
+  background: #fff;
   border-radius: var(--border-radius-lg);
   box-shadow: var(--shadow-2);
   overflow-y: auto;
   padding: var(--space-md);
-  width: 350px;
-  height: 100%;
-  display: flex;
-
+  transition: all var(--transition-normal);
 }
 
+.notifications-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 1rem;
+  align-items: center;
+  background-color: var(--surface-color);
+}
 
+.new-recipe-section {
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+.new-recipe-btn {
+  background-color: #1458D9 !important;
+  color: white !important;
+  border-radius: 8px;
+  text-transform: none;
+  font-size: 1.2rem;
+  padding: 1.5rem;
+}
+
+.new-recipe-btn .mat-icon {
+  font-size: 30px;
+  width: 40px;
+}
+
+.new-recipe-btn:hover {
+  background-color: #1565c0;
+}
+
+.notifications-card .notifications-content {
+  background-color: var(--surface-color);
+  min-height: 280px;
+  max-height: 460px;
+  overflow-y: auto;
+  padding: 1rem;
+}
 
 .notification-item {
   padding: var(--space-sm);
@@ -228,85 +266,33 @@ mat-card-title mat-icon {
 .notification-item:hover {
   box-shadow: var(--shadow-2);
 }
-.notifications-container{
-      display: flex
-;
-    flex-direction: column;
-    justify-content: space-between;
-    gap: 0.5rem;
-    padding: 1rem;
-    align-items: center;
-    background-color: white;
-}
-.new-recipe-section{
-  margin-bottom: 1rem;
-}
-.notifications-card .notifications-content{
-  background-color: white;
-min-height: 330px;
-    max-height: 460px; /* Altura máxima */
-    overflow-y: auto; /* Scroll vertical cuando sea necesario */
-  
-}
-.new-recipe-section{
-  text-align: center;
-}
-.new-recipe-btn {
-  background-color: #1458D9 !important ; /* azul primario estilo filled */
-  color: white !important;
-  border-radius: 8px; /* opcional */
-  text-transform: none;
-  text-align: center;
-  font-size: 1.2rem;
-  padding: 1.5rem;
-}
-.new-recipe-btn .mat-icon {
-  font-size: 30px;
-  width: 40px;
-}
 
-.new-recipe-btn:hover {
-  background-color: #1565c0; /* azul más oscuro al hover */
-  text-align: center;
-}
-
-
-.notifications-card,
-.notifications-card mat-card-content,
-.notifications-content mat-card,
-.notifications-content mat-card-content {
-  box-shadow: none;
-  border: none;
-  margin-bottom: 0.3rem; /* opcional para contenido interno */
-}
+/* ===== RATING CARD ===== */
 .rating-card {
-  background-color: white;
+  background-color: var(--surface-color);
   border: 1px solid #ddd;
-  border-radius: 10px; 
-  color: #212529; /* color general de texto */
-  text-align: center; /* centra contenido */
+  border-radius: 10px;
+  color: var(--text-primary);
+  text-align: center;
   height: 200px;
   max-width: 300px;
-  padding: 2rem 1rem ; 
+  padding: 2rem 1rem;
 }
-.rating-card p{
+
+.rating-card p {
   font-size: 1.2rem;
   line-height: 1.2;
   font-weight: 500;
+  color: #3f3f3f;
 }
-
-.rating-card .mat-card-title {
-  font-weight: 700; /* bold */
-  color: inherit;   /* mantiene el color definido en el card */
-}
-
-
 
 /* ===== MOBILE NOTIFICATIONS ===== */
 .mobile-overlay {
   position: fixed;
-  top: 0; left: 0;
-  width: 100%; height: 100%;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
   background: rgba(0,0,0,0.4);
   opacity: 0;
   visibility: hidden;
@@ -345,66 +331,69 @@ min-height: 330px;
   align-items: center;
 }
 
+
 /* ===== RESPONSIVE ===== */
-@media (max-width: 1023px) {
+@media (max-width: 767px) {
   .app-layout-grid {
-    grid-template-columns: 1fr;
-    grid-template-areas: "main";
+    grid-template-columns: 1fr !important;
+    grid-template-areas: "main" !important;
   }
-  .sidebar-area, .notifications-panel {
+  
+  .sidebar-area,
+  .notifications-panel {
+    display: none;
+  }
+  
+  .main-content-area {
+    padding: var(--space-sm);
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1023px) {
+  .app-layout-grid {
+    grid-template-columns: 1fr !important;
+    grid-template-areas: "main" !important;
+  }
+  
+  .sidebar-area,
+  .notifications-panel {
     display: none;
   }
 }
 
 @media (min-width: 1024px) and (max-width: 1199px) {
-  .app-layout-grid {
-   grid-template-columns: 4fr 1fr !important;
-    grid-template-areas: "main notifications" !important;
-    gap: 0rem !important;
-    padding: 3rem 0 0;
-    
-   }
-   .sidebar-area {
-    display: none !important;
+  .notifications-panel {
+    display: none;
   }
-  .new-recipe-section{
+  
+  .new-recipe-section {
     display: none;
   }
 }
 
-
-
 @media (min-width: 1200px) {
-    .app-layout-grid {
-  display: grid;
-  grid-template-columns: 1fr 5fr 1fr; /* 20% sidebar, 60% main, 20% notifications */
-  grid-template-areas: "sidebar main notifications";
-  gap: 2rem;
-  height: calc(100vh - 15px); /* ✅ Resta espacio para el footer */
-    background: linear-gradient(135deg, #F1F8FF 0%, #E3F2FD 100%);
-}
-  
+  .app-layout-grid {
+    padding: var(--space-lg) 0 0;
+  }
 }
 
 @media (min-width: 1600px) {
   .app-layout-grid {
-  display: grid;
-  grid-template-columns: 1fr 5fr 1fr; /* 20% sidebar, 60% main, 20% notifications */
-  grid-template-areas: "sidebar main notifications";
-  gap: 2rem;
-  height: calc(100vh - 30px); /* ✅ Resta espacio para el footer */
-    background: linear-gradient(135deg, #F1F8FF 0%, #E3F2FD 100%);
+    padding: var(--space-xl) 0 var(--space-md);
+  }
 }
-}
-
 
 @media (max-width: 768px) {
- .app-layout-grid {
-    grid-template-columns: 1fr !important;
-    grid-template-areas: "main";
-    padding: 1rem 0 0;
+  .welcome-section .welcome-title {
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
   }
-  .sidebar-area {
-    display: none !important;
-  }
-}// Agregar al final del archivo
+  
+.accordion_favoritas{
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 0rem;
+}
+  
+}

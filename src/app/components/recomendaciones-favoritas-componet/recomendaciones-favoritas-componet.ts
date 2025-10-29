@@ -1,67 +1,69 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { MatTableModule } from '@angular/material/table';
+import { MatTableModule, MatTableDataSource } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { MatMenuModule } from '@angular/material/menu'; // ¡Importante! Agregar esta importación
+import { MatMenuModule } from '@angular/material/menu';
+import { MatExpansionModule } from '@angular/material/expansion';
+import { MatCardModule } from '@angular/material/card';
 
-interface RecomendacionesFavorita {
+interface RecetaFavorita {
   nombre: string;
   icono: string;
-  id?: number; // Opcional para identificar la recomendación
+  id?: number;
 }
 
 @Component({
-  selector: 'app-recomendaciones-favoritas-componet',
+  selector: 'app-recomendaciones-favoritas-component',
   standalone: true,
   imports: [
-    CommonModule, 
-    MatTableModule, 
-    MatButtonModule, 
+    CommonModule,
+    MatTableModule,
+    MatButtonModule,
     MatIconModule,
-    MatMenuModule // ¡Importante! Agregar MatMenuModule a los imports
+    MatMenuModule,
+    MatExpansionModule,
+    MatCardModule
   ],
   templateUrl: './recomendaciones-favoritas-componet.html',
-  styleUrl: './recomendaciones-favoritas-componet.scss'
+  styleUrls: ['./recomendaciones-favoritas-componet.scss']
 })
-export class RecomendacionesFavoritaComponet implements OnInit {
+export class RecomendacionesFavoritasComponent implements OnInit {
   displayedColumns: string[] = ['icono', 'nombre', 'receta_acciones'];
-
-  recetasFavoritas: RecomendacionesFavorita[] = [
-    { id: 1, nombre: 'Dieta dash', icono: 'add_notes' },
-    { id: 2, nombre: 'Dieta mediterránea', icono: 'add_notes' },
-    { id: 3, nombre: 'Lactancia', icono: 'add_notes' },
+  
+  panelOpenState = signal<boolean>(false); // For the main favorites panel
+  archivedPanelState = signal<boolean>(false); // For the archived panel (optional)
+  
+  recetasFavoritas = new MatTableDataSource<RecetaFavorita>([
+    { id: 1, nombre: 'Resfriado común', icono: 'add_notes' },
+    { id: 2, nombre: 'Lumbalgia aguda', icono: 'add_notes' },
+    { id: 3, nombre: 'Migraña', icono: 'add_notes' },
     { id: 4, nombre: 'Diarrea', icono: 'add_notes' }
-  ];
+  ]);
 
   ngOnInit() {}
 
-  // Métodos para manejar las acciones del menú
-  onEditarRecomendacion(recomendacion: RecomendacionesFavorita, event: Event) {
+  onEditarReceta(receta: RecetaFavorita, event: Event) {
     event.stopPropagation();
-    console.log('Editando recomendación:', recomendacion);
-    // Aquí puedes agregar la lógica para editar la recomendación
-    // Por ejemplo, abrir un modal o navegar a una página de edición
+    console.log('Editando recomendación:', receta);
   }
 
-  onDuplicarRecomendacion(recomendacion: RecomendacionesFavorita, event: Event) {
+  onDuplicarReceta(receta: RecetaFavorita, event: Event) {
     event.stopPropagation();
-    console.log('Duplicando recomendación:', recomendacion);
-    // Lógica para duplicar la recomendación
-    const nuevaRecomendacion: RecomendacionesFavorita = {
-      ...recomendacion,
-      id: this.recetasFavoritas.length + 1,
-      nombre: `${recomendacion.nombre} (Copia)`
+    console.log('Duplicando recomendación:', receta);
+    const nuevaReceta: RecetaFavorita = {
+      ...receta,
+      id: this.recetasFavoritas.data.length + 1,
+      nombre: `${receta.nombre} (Copia)`
     };
-    this.recetasFavoritas.push(nuevaRecomendacion);
+    this.recetasFavoritas.data = [...this.recetasFavoritas.data, nuevaReceta];
   }
 
-  onEliminarRecomendacion(recomendacion: RecomendacionesFavorita, event: Event) {
+  onEliminarReceta(receta: RecetaFavorita, event: Event) {
     event.stopPropagation();
-    console.log('Eliminando recomendación:', recomendacion);
-    // Lógica para eliminar la recomendación
-    if (confirm(`¿Estás seguro de que quieres eliminar la recomendación "${recomendacion.nombre}"?`)) {
-      this.recetasFavoritas = this.recetasFavoritas.filter(r => r.id !== recomendacion.id);
+    console.log('Eliminando recomendación:', receta);
+    if (confirm(`¿Estás seguro de que quieres eliminar la recomendación "${receta.nombre}"?`)) {
+      this.recetasFavoritas.data = this.recetasFavoritas.data.filter(r => r.id !== receta.id);
     }
   }
 }
