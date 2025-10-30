@@ -354,6 +354,12 @@
         </ng-container>
 
         <!-- Perfil colapsado -->
+
+        <mat-accordion class="perfil-accordion">
+          <mat-expansion-panel class="perfil-panel" [expanded]="true">
+            <mat-expansion-panel-header class="perfil-header">
+              <mat-panel-title>PERFIL</mat-panel-title>
+              </mat-expansion-panel-header>
         <div class="perfil-items-collapsed">
           <div class="collapsed-header-item" title="PERFIL">
             <span class="header-indicator">Perfil</span>
@@ -366,6 +372,10 @@
             <span *ngIf="item.badge && item.badge > 0" class="badge-collapsed">{{ item.badge }}</span>
           </a>
         </div>
+        </mat-expansion-panel>
+      </mat-accordion>
+
+        
       </ng-container>
     </div>
 
