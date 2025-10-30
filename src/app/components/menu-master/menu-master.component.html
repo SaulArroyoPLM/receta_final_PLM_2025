@@ -402,9 +402,11 @@
       <div class="collapsed-user">
         <img src="assets/images/avatar.svg" class="avatar-small" alt="Avatar" 
              [title]="usuario" />
+             <div class="user-details">
     <strong>{{ getShortName() }}</strong>
   <strong>{{ getApellidos() }}</strong>
 <small>{{ getShortRole() }}</small>
+</div>
         <button class="logout-btn-small" (click)="onLogout()" title="Cerrar sesión">
           <mat-icon>exit_to_app</mat-icon>
         </button>
