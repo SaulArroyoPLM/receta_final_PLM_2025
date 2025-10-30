@@ -214,15 +214,20 @@ constructor(
   }
 
   shouldShowNotifications(): boolean {
+    // Notificaciones se muestran desde Desktop Small (1024px) en adelante
     return this.isDesktopSmall || this.isDesktopMedium || this.isDesktopLarge || this.is4K || this.isUltraWide;
   }
 
   shouldShowSidebarInline(): boolean {
-    return !this.isMobile;
+    // El sidebar INLINE (dentro del app-menu-master) solo se muestra desde Desktop Medium (1200px)
+    // En Desktop Small el menu-master muestra su header mobile
+    return this.isDesktopMedium || this.isDesktopLarge || this.is4K || this.isUltraWide;
   }
 
   shouldShowMobileHeader(): boolean {
-    return this.isMobile || this.isTablet;
+    // Este método ya no se usa porque el menu-master maneja su propio header
+    // Pero lo dejamos por compatibilidad
+    return false;
   }
 
   getSidebarWidth(): string {
@@ -288,12 +293,13 @@ constructor(
     this.selectedConsultorio = nombre;
     console.log('Consultorio seleccionado:', nombre);
   }
-onSidebarToggle(event: { open: boolean; collapsed: boolean }): void {
+  onSidebarToggle(event: { open: boolean; collapsed: boolean }): void {
     this.sidebarOpen = event.open;
     this.sidebarCollapsed = event.collapsed;
     console.log('Received Sidebar Toggle - Open:', this.sidebarOpen, 'Collapsed:', this.sidebarCollapsed);
     this.forceLayoutRefresh();
   }
+  
   
 
   toggleSidebar(): void {
@@ -457,37 +463,39 @@ forceLayoutRefresh(): void {
   }
 
 
-getGridTemplateColumns(): string {
-  // Mobile - sin sidebar
-  if (this.isMobile || this.isTablet) {
-    return '1fr';
-  }
-  
-  // Desktop Small (1024-1199px) - sin notificaciones
-  if (this.isDesktopSmall) {
-    if (this.sidebarCollapsed) {
-      return '80px 1fr'; // 80px sidebar colapsado, resto para main
+  getGridTemplateColumns(): string {
+    // Mobile y Tablet - solo main (sin sidebar ni notificaciones)
+    if (this.isMobile || this.isTablet) {
+      return '1fr';
     }
-    return '280px 1fr'; // 280px sidebar expandido, resto para main
+    
+    // Desktop Small (1024-1199px) - main + notificaciones
+    // El sidebar del menu-master está en el header superior
+    if (this.isDesktopSmall) {
+      return '1fr 300px';
+    }
+    
+    // Desktop Medium y superiores (≥1200px) - sidebar + main + notificaciones
+    if (this.sidebarCollapsed) {
+      return '130px 1fr 300px'; // Sidebar colapsado
+    }
+    
+    return '280px 1fr 300px'; // Sidebar expandido
   }
-  
-  // Desktop Medium y superiores - con notificaciones
-  if (this.sidebarCollapsed) {
-    return '130px 1fr 300px'; // 10% colapsado, 70% main, 20% notificaciones
-  }
-  
-  return '280px 1fr 300px'; // 20% sidebar, 60% main, 20% notificaciones
-}
 
-getGridTemplateAreas(): string {
+ getGridTemplateAreas(): string {
+  // Mobile y Tablet - solo main
   if (this.isMobile || this.isTablet) {
     return '"main"';
   }
   
+  // Desktop Small (1024-1199px) - main + notificaciones
   if (this.isDesktopSmall) {
-    return '"sidebar main"';
+    return '"main notifications"';
   }
   
+  // Desktop Medium y superiores - sidebar + main + notificaciones
   return '"sidebar main notifications"';
 }
+  
 }

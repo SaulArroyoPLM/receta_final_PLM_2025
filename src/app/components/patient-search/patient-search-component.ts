@@ -93,7 +93,7 @@ export class PatientSearchComponent implements OnInit {
     },
     { 
       id: 3,
-      nombre: 'Ramiro Fernando', 
+      nombre: 'Emilio Moises', 
       primerApellido: 'Hernández', 
       segundoApellido: 'Fernández', 
       sexo: 'M', 

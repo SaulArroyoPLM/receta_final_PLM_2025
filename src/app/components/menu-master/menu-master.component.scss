@@ -1105,6 +1105,7 @@
   transform: scale(0.99);
 }
 
+
 /* ===== RESPONSIVE OVERRIDES ===== */
 @media (max-width: 767px) {
   .mobile-drawer {
@@ -1289,15 +1290,19 @@
   font-weight: 600 !important;
 }
 // Tablet y Desktop - Muestra botón completo
-.nueva-receta-desktop {
-  display: inline-flex;
-}
+
 
 .nueva-receta-mobile {
   display: none;
   background-color: #3876D9 !important;
   color: white !important ;
   
+}
+
+@media (min-width: 1024px) and (max-width: 1199px) {
+  .nueva-receta-desktop {
+    display: none;
+  }
 }
 
 // Móvil (425px o menos) - Muestra solo el FAB

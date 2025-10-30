@@ -38,7 +38,6 @@ export class RecetasFavoritasComponent implements OnInit {
     { id: 1, nombre: 'Resfriado común', icono: 'add_notes' },
     { id: 2, nombre: 'Lumbalgia aguda', icono: 'add_notes' },
     { id: 3, nombre: 'Migraña', icono: 'add_notes' },
-    { id: 4, nombre: 'Diarrea', icono: 'add_notes' }
   ]);
 
   ngOnInit() {}
