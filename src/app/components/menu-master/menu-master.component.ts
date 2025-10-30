@@ -17,7 +17,7 @@ import { NotificationMasterComponent } from '../notificaciones-master-componet/n
 import { StarRatingComponent } from '../star-rating-component/star-rating-component.component';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog'; // 👈 AGREGAR ESTA LÍNEA
 import { IonicModule } from '@ionic/angular';
-import { NuevaRecetaComponent } from '../../modals/nueva-receta/nueva-receta.component';
+// import { NuevaRecetaComponent } from '../../modals/nueva-receta/nueva-receta.component';// 
 import { AuthMockService, UsuarioAutenticado } from '../../services/auth-mock.service'; // Importar el servicio
 import { Subscription } from 'rxjs'; // Para manejar la suscripción
 
@@ -651,12 +651,12 @@ async handleMenuClick(item: any) {
   
   if (item.action === 'openModal') {
     console.log('✅ Abriendo modal...');
-    const dialogRef = this.dialog.open(NuevaRecetaComponent, {
-      width: '1080px',
-      height: '500px',
-      disableClose: false,
-      panelClass: 'custom-modal'
-    });
+    // const dialogRef = this.dialog.open(NuevaRecetaComponent, {
+  //   width: '1080px',
+  //   height: '500px',
+  //   disableClose: false,
+  //   panelClass: 'custom-modal'
+  // });
   } else if (item.route) {
     console.log('📍 Navegando a:', item.route);
     this.router.navigate([item.route]);

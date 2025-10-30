@@ -5,7 +5,7 @@ import { IonicModule } from '@ionic/angular';
 import { RouterModule } from '@angular/router';
 import { UsuarioService } from '../../services/usuario.service';
 import { MenuMasterComponent } from '../../components/menu-master/menu-master.component';
-import { MedicineSearchComponent } from '../../components/medicamento-buscador-component/medicine-search-component';
+import { MedicineSearchComponent} from '../../components/medicamento-buscador-component/medicine-search-component';
 import { PatientSearchComponent } from '../../components/patient-search/patient-search-component';
 import { RecetasFavoritasComponent } from '../../components/recetas-favoritas-componet/recetas-favoritas-componet';
 import { RecomendacionesFavoritasComponent } from '../../components/recomendaciones-favoritas-componet/recomendaciones-favoritas-componet';
