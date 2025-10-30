@@ -361,9 +361,6 @@
               <mat-panel-title>PERFIL</mat-panel-title>
               </mat-expansion-panel-header>
         <div class="perfil-items-collapsed">
-          <div class="collapsed-header-item" title="PERFIL">
-            <span class="header-indicator">Perfil</span>
-          </div>
           <a *ngFor="let item of perfilItems"
              [routerLink]="item.route"
              [title]="item.label"
