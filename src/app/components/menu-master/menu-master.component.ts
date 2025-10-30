@@ -650,8 +650,8 @@ async handleMenuClick(item: any) {
   }
   
   if (item.action === 'openModal') {
-    console.log('✅ Abriendo modal...');
-    // const dialogRef = this.dialog.open(NuevaRecetaComponent, {
+    //console.log('✅ Abriendo modal...');
+     // const dialogRef = this.dialog.open(NuevaRecetaComponent, {
   //   width: '1080px',
   //   height: '500px',
   //   disableClose: false,
