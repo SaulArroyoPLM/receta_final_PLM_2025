@@ -20,7 +20,7 @@ import { MatDividerModule } from '@angular/material/divider';
 import { MatButtonModule } from '@angular/material/button';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatDialogModule, MatDialog } from '@angular/material/dialog';
-import { NuevaRecetaComponent } from '../../modals/nueva-receta/nueva-receta.component';
+  //import { NuevaRecetaComponent } from '../../modals/nueva-receta/nueva-receta.component';  //
 import { FooterTabsComponent } from '../../components/footer-tabs/footer-tabs.component';
 import { AuthMockService, UsuarioAutenticado } from '../../services/auth-mock.service';
 
@@ -322,20 +322,20 @@ constructor(
     }
   }
 
-  onNuevaRecetaClick() {
-    const dialogRef = this.dialog.open(NuevaRecetaComponent, {
-      width: '1080px',
-      height: '500px',
-    });
-    dialogRef.afterClosed().subscribe(result => {
-      console.log('Modal cerrado, acción:', result);
-      if (result === 'new-patient') {
+  //onNuevaRecetaClick() {
+    // const dialogRef = this.dialog.open(NuevaRecetaComponent, {
+  //   width: '1080px',
+  //   height: '500px',
+    //});
+    //dialogRef.afterClosed().subscribe(result => {
+      //console.log('Modal cerrado, acción:', result);
+      //if (result === 'new-patient') {
         // lógica si se creó un nuevo paciente
-      } else if (result === 'search-patient') {
+      //} else if (result === 'search-patient') {
         // lógica si se busca un paciente existente
-      }
-    });
-  }
+      //}
+    //});
+  //}
 
   toggleMobileNotifications(): void {
     this.showMobileNotifications = !this.showMobileNotifications;
