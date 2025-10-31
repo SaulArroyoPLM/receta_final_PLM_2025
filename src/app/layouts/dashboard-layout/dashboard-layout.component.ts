@@ -1,16 +1,14 @@
 // src/app/layouts/dashboard-layout/dashboard-layout.component.ts
-import { Component, Input, OnInit, OnDestroy, AfterViewInit, ViewChild, Renderer2, Inject, PLATFORM_ID, ElementRef } from '@angular/core'; // 🔥 Agrega ElementRef
+import { Component, Input, OnInit, OnDestroy, AfterViewInit, ViewChild, Renderer2, Inject, PLATFORM_ID, ElementRef, ChangeDetectorRef } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { RouterOutlet, Router } from '@angular/router';
-import { IonicModule, IonContent } from '@ionic/angular'; // Agrega IonContent aquí
-
+import { IonicModule } from '@ionic/angular';
 import { UsuarioService } from '../../services/usuario.service';
 import { MenuMasterComponent } from '../../components/menu-master/menu-master.component';
 import { NotificationMasterComponent } from '../../components/notificaciones-master-componet/notificaciones-master-componet.component';
 import { StarRatingComponent } from '../../components/star-rating-component/star-rating-component.component';
 import { FooterTabsComponent } from '../../components/footer-tabs/footer-tabs.component';
 import { Notification } from '../../interfaces/notification.interface';
-
 import { MatIconModule } from '@angular/material/icon';
 import { MatBadgeModule } from '@angular/material/badge';
 import { MatCardModule } from '@angular/material/card';
@@ -19,8 +17,9 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatDialogModule, MatDialog } from '@angular/material/dialog';
 
-import { NuevaRecetaComponent } from '../../modals/nueva-receta/nueva-receta.component';
 
+  //import { NuevaRecetaComponent } from '../../modals/nueva-receta/nueva-receta.component';  //
+  
 @Component({
   selector: 'app-dashboard-layout',
   standalone: true,
@@ -46,12 +45,12 @@ import { NuevaRecetaComponent } from '../../modals/nueva-receta/nueva-receta.com
 export class DashboardLayoutComponent implements OnInit, AfterViewInit, OnDestroy {
 
   @ViewChild('menuMaster') menuMaster!: MenuMasterComponent;
-  @ViewChild('content', { read: ElementRef }) contentEl!: ElementRef; // 🔥 Cambiado para acceder via nativeElement
-  @ViewChild('footer', { read: ElementRef }) footerEl!: ElementRef; // 🔥 Agrega esto al inicio de la clase, con contentEl
+  @ViewChild('content', { read: ElementRef }) contentEl!: ElementRef;
+  @ViewChild('footer', { read: ElementRef }) footerEl!: ElementRef;
 
   // ===== INPUTS OPCIONALES =====
   @Input() pageTitle: string = 'Dashboard';
-  @Input() showNotifications: boolean = false; // 🔥 CLAVE: Controla si mostrar notificaciones
+  @Input() showNotifications: boolean = true; // 🔥 Por defecto TRUE para mostrar notificaciones
   @Input() showFooter: boolean = true;
   @Input() showNewRecipeButton: boolean = true;
   @Input() customNotifications: Notification[] = [];
@@ -68,7 +67,7 @@ export class DashboardLayoutComponent implements OnInit, AfterViewInit, OnDestro
   // ===== ESTADOS DEL UI =====
   showMobileNotifications = false;
   sidebarOpen = true;
-  sidebarCollapsed = false;
+  sidebarCollapsed = false; // 🔥 Estado de colapso del sidebar
 
   // ===== BREAKPOINTS RESPONSIVOS =====
   isMobile = false;
@@ -86,8 +85,6 @@ export class DashboardLayoutComponent implements OnInit, AfterViewInit, OnDestro
   // ===== UTILIDADES =====
   private isBrowser = false;
   private resizeTimeout: any;
-
-  // 🔥 SISTEMA AUTOMÁTICO DE DETECCIÓN DE SCROLL
   private scrollObserver!: MutationObserver;
   private resizeObserver!: ResizeObserver;
   private autoScrollPadding = 0;
@@ -98,7 +95,8 @@ export class DashboardLayoutComponent implements OnInit, AfterViewInit, OnDestro
     private usuarioService: UsuarioService,
     private router: Router,
     private renderer: Renderer2,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private cdr: ChangeDetectorRef
   ) {
     this.isBrowser = isPlatformBrowser(this.platformId);
     this.nombreDoctor = this.usuarioService.getUsuario().nombre;
@@ -117,24 +115,14 @@ export class DashboardLayoutComponent implements OnInit, AfterViewInit, OnDestro
     if (this.isBrowser) {
       setTimeout(() => {
         this.refreshLayout();
-        this.setupObservers(); // 🔥 Inicia observers para scroll dinámico
+        this.setupObservers();
       }, 100);
-    }
-  }
-
-  private updateScrollBehavior(): void {
-    if (this.showMobileNotifications && this.isMobile) {
-      // Solo bloquear scroll cuando hay overlay móvil
-      document.body.style.overflow = 'hidden';
-    } else {
-      // Permitir scroll normal
-      document.body.style.overflow = 'auto';
     }
   }
 
   ngOnDestroy(): void {
     this.removeEventListeners();
-    this.cleanupObservers(); // 🔥 Limpia observers
+    this.cleanupObservers();
     
     if (this.resizeTimeout) {
       clearTimeout(this.resizeTimeout);
@@ -180,11 +168,9 @@ export class DashboardLayoutComponent implements OnInit, AfterViewInit, OnDestro
 
   private refreshLayout = (): void => {
     const width = window.innerWidth;
-    const height = window.innerHeight;
     
     this.resetBreakpoints();
     
-    // Tu lógica de breakpoints existente...
     if (width < 768) {
       this.isMobile = true;
     } else if (width >= 768 && width < 1024) {
@@ -202,11 +188,13 @@ export class DashboardLayoutComponent implements OnInit, AfterViewInit, OnDestro
     }
 
     this.updateAdaptiveScales(width);
-    this.adjustScrollHeight(); // 🔥 Calcula y ajusta height en cada refresh
+    this.adjustScrollHeight();
 
     if (this.isDesktop && this.showMobileNotifications) {
       this.showMobileNotifications = false;
     }
+
+    this.logBreakpointChange(width);
   };
 
   private resetBreakpoints(): void {
@@ -253,45 +241,69 @@ export class DashboardLayoutComponent implements OnInit, AfterViewInit, OnDestro
     return this.notificaciones.filter(n => n.unread || false);
   }
 
-  // 🔥 MÉTODO CLAVE: Controla cuándo mostrar notificaciones
+  // 🔥 SISTEMA DE GRID DINÁMICO - MIGRADO DESDE HOME
+  getGridTemplateColumns(): string {
+    // Mobile y Tablet - solo main (sin sidebar ni notificaciones)
+    if (this.isMobile || this.isTablet) {
+      return '1fr';
+    }
+    
+    // Desktop Small (1024-1199px) - main + notificaciones
+    // El sidebar del menu-master está en el header superior
+    if (this.isDesktopSmall) {
+      return this.showNotifications ? '1fr 300px' : '1fr';
+    }
+    
+    // Desktop Medium y superiores (≥1200px) - sidebar + main + notificaciones
+    if (this.sidebarCollapsed) {
+      return this.showNotifications ? '130px 1fr 300px' : '130px 1fr'; // Sidebar colapsado
+    }
+    
+    return this.showNotifications ? '280px 1fr 300px' : '280px 1fr'; // Sidebar expandido
+  }
+
+  getGridTemplateAreas(): string {
+    // Mobile y Tablet - solo main
+    if (this.isMobile || this.isTablet) {
+      return '"main"';
+    }
+    
+    // Desktop Small (1024-1199px) - main + notificaciones (sin sidebar inline)
+    if (this.isDesktopSmall) {
+      return this.showNotifications ? '"main notifications"' : '"main"';
+    }
+    
+    // Desktop Medium y superiores - sidebar + main + notificaciones
+    return this.showNotifications ? '"sidebar main notifications"' : '"sidebar main"';
+  }
+
+  // 🔥 Método para controlar cuándo mostrar notificaciones
   shouldShowNotifications(): boolean {
-    // Solo mostrar si está habilitado Y es desktop
-    return this.showNotifications && this.isDesktop;
+    return this.showNotifications && (this.isDesktopSmall || this.isDesktop);
   }
 
   shouldShowSidebarInline(): boolean {
-    return !this.isMobile;
+    // Sidebar inline solo desde Desktop Medium en adelante
+    return this.isDesktopMedium || this.isDesktopLarge || this.is4K || this.isUltraWide;
   }
 
   shouldShowMobileHeader(): boolean {
-    return this.isMobile || this.isTablet;
+    // Header móvil en Mobile, Tablet y Desktop Small
+    return this.isMobile || this.isTablet || this.isDesktopSmall;
   }
 
   // ===== MÉTODOS PARA OBTENER DIMENSIONES =====
 
   getSidebarWidth(): string {
-    if (this.sidebarCollapsed) {
-      if (this.isDesktopSmall) return '70px';
-      if (this.isDesktopMedium) return '75px';
-      if (this.isDesktopLarge) return '80px';
-      if (this.is4K || this.isUltraWide) return '90px';
-      return '70px';
-    } else {
-      if (this.isTablet) return '250px';
-      if (this.isDesktopSmall) return '240px';
-      if (this.isDesktopMedium) return '260px';
-      if (this.isDesktopLarge) return '280px';
-      if (this.is4K || this.isUltraWide) return '320px';
-      return '250px';
-    }
+    return this.sidebarCollapsed ? '130px' : '280px';
   }
 
   getNotificationsWidth(): string {
     if (this.isDesktopSmall) return '250px';
     if (this.isDesktopMedium) return '280px';
     if (this.isDesktopLarge) return '300px';
-    if (this.is4K || this.isUltraWide) return '350px';
-    return '280px';
+    if (this.is4K || this.isUltraWide) return '';
+    return '300px';
   }
 
   getNotificationsListHeight(): string {
@@ -309,10 +321,15 @@ export class DashboardLayoutComponent implements OnInit, AfterViewInit, OnDestro
 
   onConsultorioSeleccionado(nombre: string): void {
     this.selectedConsultorio = nombre;
+    console.log('Consultorio seleccionado:', nombre);
   }
 
-  onSidebarToggle(open: boolean): void {
-    this.sidebarOpen = open;
+  // 🔥 FIXED: Manejo correcto del evento sidebarToggle
+  onSidebarToggle(event: { open: boolean; collapsed: boolean }): void {
+    this.sidebarOpen = event.open;
+    this.sidebarCollapsed = event.collapsed;
+    console.log('Sidebar Toggle - Open:', this.sidebarOpen, 'Collapsed:', this.sidebarCollapsed);
+    this.forceLayoutRefresh();
   }
 
   toggleSidebar(): void {
@@ -320,7 +337,12 @@ export class DashboardLayoutComponent implements OnInit, AfterViewInit, OnDestro
     
     if (this.isMobile) {
       this.sidebarOpen = !this.sidebarOpen;
+      if (this.sidebarOpen) {
+        this.showMobileNotifications = false;
+      }
     }
+    
+    this.forceLayoutRefresh();
   }
 
   onMenuItemClick(): void {
@@ -333,16 +355,16 @@ export class DashboardLayoutComponent implements OnInit, AfterViewInit, OnDestro
     }
   }
 
-  onNuevaRecetaClick() {
-    const dialogRef = this.dialog.open(NuevaRecetaComponent, {
-      width: '1080px',
-      height: '500px',
-    });
-
-    dialogRef.afterClosed().subscribe(result => {
-      console.log('Modal cerrado, acción:', result);
-    });
-  }
+  // ===== MODAL NUEVA RECETA (COMENTADO) =====
+  //onNuevaRecetaClick() {
+    //const dialogRef = this.dialog.open(NuevaRecetaComponent, {
+      //width: '1080px',
+      //height: '500px',
+    //});
+    //dialogRef.afterClosed().subscribe(result => {
+      //console.log('Modal cerrado, acción:', result);
+    //});
+  //}
 
   // ===== MÉTODOS DE NOTIFICACIONES =====
 
@@ -353,15 +375,24 @@ export class DashboardLayoutComponent implements OnInit, AfterViewInit, OnDestro
       this.sidebarOpen = false;
     }
 
-    this.updateScrollBehavior(); // 🔥 Actualiza scroll body
+    this.updateScrollBehavior();
   }
 
   closeMobileNotifications(): void {
     this.showMobileNotifications = false;
-    this.updateScrollBehavior(); // 🔥 Actualiza scroll body
+    this.updateScrollBehavior();
+  }
+
+  private updateScrollBehavior(): void {
+    if (this.showMobileNotifications && this.isMobile) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'auto';
+    }
   }
 
   onNotificationAction(event: any): void {
+    console.log('Acción de notificación:', event);
     switch (event.action) {
       case 'mark_read':
         this.markNotificationAsRead(event.notificationId);
@@ -372,6 +403,8 @@ export class DashboardLayoutComponent implements OnInit, AfterViewInit, OnDestro
       case 'navigate':
         this.router.navigate([event.route]);
         break;
+      default:
+        console.log('Acción no reconocida:', event);
     }
   }
 
@@ -387,11 +420,9 @@ export class DashboardLayoutComponent implements OnInit, AfterViewInit, OnDestro
   }
 
   private loadNotifications(): void {
-    // Si se pasaron notificaciones custom, usarlas
     if (this.customNotifications.length > 0) {
       this.notificaciones = this.customNotifications;
     } else {
-      // Notificaciones por defecto
       this.notificaciones = [
         {
           id: 1,
@@ -436,55 +467,57 @@ export class DashboardLayoutComponent implements OnInit, AfterViewInit, OnDestro
     return item.id || index;
   }
 
-  // 🔥 AJUSTE MANUAL/DINÁMICO DE SCROLL HEIGHT
-private adjustScrollHeight(): void {
-  if (!this.contentEl || !this.contentEl.nativeElement) return;
+  forceLayoutRefresh(): void {
+    this.cdr.detectChanges();
+  }
 
-  const innerScroll = this.contentEl.nativeElement.querySelector('.inner-scroll') as HTMLElement;
-  const scrollableContent = this.contentEl.nativeElement.querySelector('.scrollable-content') as HTMLElement;
+  // ===== SCROLL SYSTEM =====
 
-  if (innerScroll && scrollableContent) {
-    const viewportHeight = window.innerHeight;
-    const headerEl = document.querySelector('.mobile-toolbar') as HTMLElement;
-    const footerEl = this.footerEl ? this.footerEl.nativeElement : null; // 🔥 Usa el ViewChild
-    const headerHeight = headerEl ? headerEl.offsetHeight : 56;
-    const footerHeight = footerEl ? footerEl.offsetHeight : (this.showFooter ? 50 : 0); // 🔥 Lee height real o default
-    const paddingTotal = 48;
-    const desiredGap = 40; // Espacio "justo" abajo
+  private adjustScrollHeight(): void {
+    if (!this.contentEl || !this.contentEl.nativeElement) return;
 
-    const calculatedHeight = viewportHeight - headerHeight - footerHeight - paddingTotal - desiredGap;
+    const innerScroll = this.contentEl.nativeElement.querySelector('.inner-scroll') as HTMLElement;
+    const scrollableContent = this.contentEl.nativeElement.querySelector('.scrollable-content') as HTMLElement;
 
-    this.renderer.setStyle(innerScroll, 'height', `${calculatedHeight}px`);
-    this.renderer.setStyle(innerScroll, 'overflow-y', 'auto');
-    this.renderer.setStyle(scrollableContent, 'min-height', `${calculatedHeight}px`);
-    this.renderer.setStyle(scrollableContent, 'padding-bottom', `${desiredGap + footerHeight + 20}px`); // 🔥 Extra por footer
+    if (innerScroll && scrollableContent) {
+      const viewportHeight = window.innerHeight;
+      const headerEl = document.querySelector('.mobile-toolbar') as HTMLElement;
+      const footerEl = this.footerEl ? this.footerEl.nativeElement : null;
+      const headerHeight = headerEl ? headerEl.offsetHeight : 56;
+      const footerHeight = footerEl ? footerEl.offsetHeight : (this.showFooter ? 50 : 0);
+      const paddingTotal = 48;
+      const desiredGap = 40;
 
-    if (scrollableContent.scrollHeight > calculatedHeight) {
-      this.renderer.addClass(scrollableContent, 'has-more-content');
-    } else {
-      this.renderer.removeClass(scrollableContent, 'has-more-content');
+      const calculatedHeight = viewportHeight - headerHeight - footerHeight - paddingTotal - desiredGap;
+
+      this.renderer.setStyle(innerScroll, 'height', `${calculatedHeight}px`);
+      this.renderer.setStyle(innerScroll, 'overflow-y', 'auto');
+      this.renderer.setStyle(scrollableContent, 'min-height', `${calculatedHeight}px`);
+      this.renderer.setStyle(scrollableContent, 'padding-bottom', `${desiredGap + footerHeight + 20}px`);
+
+      if (scrollableContent.scrollHeight > calculatedHeight) {
+        this.renderer.addClass(scrollableContent, 'has-more-content');
+      } else {
+        this.renderer.removeClass(scrollableContent, 'has-more-content');
+      }
     }
   }
-}
 
-  // 🔥 SETUP DE OBSERVERS PARA DETECCIÓN AUTOMÁTICA
   private setupObservers(): void {
     const scrollableContent = document.querySelector('.scrollable-content') as HTMLElement;
     const mainContentArea = document.querySelector('.main-content-area') as HTMLElement;
 
     if (scrollableContent && mainContentArea) {
-      // MutationObserver: Detecta cambios en contenido (e.g., cards agregados)
       this.scrollObserver = new MutationObserver(() => {
         if (!this.scrollThrottle) {
           this.scrollThrottle = true;
-          this.adjustScrollHeight(); // Recalcula al cambiar contenido
-          this.updateAutoPadding(scrollableContent); // Ajusta padding dinámico
-          setTimeout(() => this.scrollThrottle = false, 300); // Throttle para performance
+          this.adjustScrollHeight();
+          this.updateAutoPadding(scrollableContent);
+          setTimeout(() => this.scrollThrottle = false, 300);
         }
       });
       this.scrollObserver.observe(scrollableContent, { childList: true, subtree: true });
 
-      // ResizeObserver: Detecta resize del contenedor principal
       this.resizeObserver = new ResizeObserver(() => {
         this.adjustScrollHeight();
       });
@@ -492,23 +525,51 @@ private adjustScrollHeight(): void {
     }
   }
 
-  // 🔥 LIMPIEZA DE OBSERVERS
   private cleanupObservers(): void {
     if (this.scrollObserver) this.scrollObserver.disconnect();
     if (this.resizeObserver) this.resizeObserver.disconnect();
   }
 
-  // 🔥 AJUSTE AUTOMÁTICO DE PADDING ABAJO
   private updateAutoPadding(scrollableContent: HTMLElement): void {
-    const cards = scrollableContent.querySelectorAll('.medication-card, .recipe-card, mat-card'); // Tus cards
+    const cards = scrollableContent.querySelectorAll('.medication-card, .recipe-card, mat-card');
     const lastCard = cards[cards.length - 1] as HTMLElement;
 
     if (lastCard) {
-      // Calcula padding "justo" basado en última card (e.g., 20px extra si hay muchas)
-      this.autoScrollPadding = cards.length > 4 ? 60 : 40; // Ajusta lógica
+      this.autoScrollPadding = cards.length > 4 ? 60 : 40;
       this.renderer.setStyle(scrollableContent, 'padding-bottom', `${this.autoScrollPadding}px`);
-      this.renderer.addClass(scrollableContent, 'debug-auto-scroll'); // Para debug CSS si quieres
+      this.renderer.addClass(scrollableContent, 'debug-auto-scroll');
       this.renderer.setAttribute(scrollableContent, 'data-padding', this.autoScrollPadding.toString());
     }
+  }
+
+  // ===== DEBUG =====
+
+  private logBreakpointChange(width: number): void {
+    if (typeof console !== 'undefined' && console.log) {
+      const breakpoint = this.getCurrentBreakpointName();
+      console.log(`📱 Layout: ${breakpoint} (${width}px) | Grid: ${this.getGridTemplateColumns()} | Areas: ${this.getGridTemplateAreas()}`);
+    }
+  }
+
+  private getCurrentBreakpointName(): string {
+    if (this.isMobile) return 'Mobile';
+    if (this.isTablet) return 'Tablet';
+    if (this.isDesktopSmall) return 'Desktop Small';
+    if (this.isDesktopMedium) return 'Desktop Medium';
+    if (this.isDesktopLarge) return 'Desktop Large';
+    if (this.is4K) return '4K';
+    if (this.isUltraWide) return 'Ultra Wide';
+    return 'Unknown';
+  }
+
+  getLayoutInfo(): { [key: string]: any } {
+    return {
+      breakpoint: this.getCurrentBreakpointName(),
+      width: window.innerWidth,
+      showNotifications: this.shouldShowNotifications(),
+      sidebarCollapsed: this.sidebarCollapsed,
+      gridColumns: this.getGridTemplateColumns(),
+      gridAreas: this.getGridTemplateAreas()
+    };
   }
 }

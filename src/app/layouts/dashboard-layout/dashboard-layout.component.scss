@@ -318,6 +318,7 @@ ion-content .scroll-content {
   background: var(--primary-color);
   color: #fff;
   flex-shrink: 0;
+  display: none;
 
   .mobile-logo {
     height: 32px;
@@ -644,6 +645,16 @@ ion-content .scroll-content {
   .app-layout-grid.notifications-hidden .new-recipe-section {
     display: block;
   }
+  .notifications-panel{
+    display: block !important;
+        width: 250px;
+        position: sticky;
+        top: 0;
+        height: 100vh;
+        overflow-y: auto;
+        background: #fff;
+        border-left: 1px solid #e0e0e0;
+  }
 }
 
 // Desktop Medium (1200px - 1439px)
@@ -651,10 +662,7 @@ ion-content .scroll-content {
   .app-layout-grid {
     min-height: 100vh !important;
     
-    &.notifications-visible {
-      grid-template-columns: 280px 1fr 280px !important;
-      grid-template-areas: "sidebar main notifications" !important;
-    }
+
     
     &.notifications-hidden {
       grid-template-columns: 280px 1fr !important;
@@ -672,8 +680,8 @@ ion-content .scroll-content {
     min-height: 100vh !important;
     
     &.notifications-visible {
-      grid-template-columns: 1fr 5fr 1fr !important;
-      grid-template-areas: "sidebar main notifications" !important;
+      grid-template-columns: 1fr 5fr 1fr ;
+      grid-template-areas: "sidebar main notifications";
     }
     
     &.notifications-hidden {
@@ -692,8 +700,8 @@ ion-content .scroll-content {
     min-height: 100vh !important;
     
     &.notifications-visible {
-      grid-template-columns: 1fr 5fr 1fr !important;
-      grid-template-areas: "sidebar main notifications" !important;
+      grid-template-columns: 1fr 5fr 1fr ;
+      grid-template-areas: "sidebar main notifications" ;
     }
     
     &.notifications-hidden {
@@ -703,10 +711,6 @@ ion-content .scroll-content {
     
     gap: 2rem !important;
     padding: 0 !important;
-  }
-
-  .notifications-panel {
-    max-width: 400px;
   }
 
   .new-recipe-btn {

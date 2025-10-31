@@ -6,18 +6,23 @@
     #menuMaster
     [selectedConsultorio]="selectedConsultorio"
     [sidebarOpen]="sidebarOpen"
+    [sidebarCollapsed]="sidebarCollapsed"
     [notificaciones]="notificaciones"
     [hasNotificationComponent]="shouldShowNotifications()"
     [hasStarRatingComponent]="shouldShowNotifications()"
     (consultorioSeleccionado)="onConsultorioSeleccionado($event)"
+    (sidebarToggle)="onSidebarToggle($event)"
     (menuItemClick)="onMenuItemClick()"
-    (nuevaRecetaClick)="onNuevaRecetaClick()"
     (ratingSubmitted)="onMenuRatingSelected($event)"
     (notificationActionClicked)="onNotificationAction($event)">
   </app-menu-master>
 
-  <!-- LAYOUT PRINCIPAL CON CSS GRID -->
+  <!-- LAYOUT PRINCIPAL CON CSS GRID DINÁMICO -->
   <div class="app-layout-grid" 
+       [ngStyle]="{
+         'grid-template-columns': getGridTemplateColumns(),
+         'grid-template-areas': getGridTemplateAreas()
+       }"
        [ngClass]="{
          'layout-mobile': isMobile,
          'layout-tablet': isTablet,
@@ -27,10 +32,12 @@
          'layout-4k': is4K,
          'layout-ultrawide': isUltraWide,
          'notifications-visible': shouldShowNotifications(),
-         'notifications-hidden': !shouldShowNotifications()
+         'notifications-hidden': !shouldShowNotifications(),
+         'sidebar-collapsed': sidebarCollapsed,
+         'sidebar-expanded': !sidebarCollapsed
        }">
 
-    <!-- SIDEBAR AREA -->
+    <!-- SIDEBAR AREA (Grid maneja visibilidad) -->
     <div class="sidebar-area" 
          *ngIf="shouldShowSidebarInline()"
          [style.width]="getSidebarWidth()">
@@ -47,10 +54,11 @@
         *ngIf="shouldShowMobileHeader()">
         
         <button 
-          mat-icon-button
-          (click)="toggleSidebar()"
-          [attr.aria-label]="sidebarOpen ? 'Cerrar menú' : 'Abrir menú'">
-          <mat-icon>{{ sidebarOpen ? 'close' : 'menu' }}</mat-icon>
+          class="toggle-btn" 
+          (click)="toggleSidebar()" 
+          mat-icon-button 
+          [attr.aria-label]="sidebarCollapsed ? 'Expandir menú' : 'Colapsar menú'">
+          <mat-icon>{{ sidebarCollapsed ? 'chevron_right' : 'chevron_left' }}</mat-icon>
         </button>
         
         <img 
@@ -77,15 +85,15 @@
       <!-- ÁREA DE CONTENIDO SCROLLEABLE -->
       <div class="scrollable-content">
         
-        <!-- 🔥 CONTENIDO DINÁMICO VIA ROUTER OUTLET O NG-CONTENT -->
+        <!-- 🔥 CONTENIDO DINÁMICO VIA NG-CONTENT -->
         <ng-content></ng-content>
         
-        <!-- Fallback router outlet si no hay contenido -->
+        <!-- Fallback router outlet -->
         <router-outlet></router-outlet>
       </div>
     </main>
 
-    <!-- PANEL DE NOTIFICACIONES DESKTOP (Solo si está habilitado) -->
+    <!-- PANEL DE NOTIFICACIONES DESKTOP -->
     <aside 
       class="notifications-panel"
       *ngIf="shouldShowNotifications()"
@@ -98,8 +106,7 @@
           <button 
             mat-raised-button 
             color="primary" 
-            class="new-recipe-btn"
-            (click)="onNuevaRecetaClick()">
+            class="new-recipe-btn">
            <mat-icon>note_add</mat-icon>
             <span>Nueva receta</span>
           </button>
@@ -154,7 +161,7 @@
     </aside>
   </div>
 
-  <!-- MOBILE NOTIFICATIONS BOTTOM SHEET (Solo si están habilitadas) -->
+  <!-- MOBILE NOTIFICATIONS BOTTOM SHEET -->
   <div 
     class="mobile-overlay"
     [class.active]="showMobileNotifications && isMobileOrTablet && showNotifications"
@@ -187,8 +194,7 @@
           <button 
             mat-raised-button 
             color="primary" 
-            class="mobile-recipe-btn"
-            (click)="onNuevaRecetaClick()">
+            class="mobile-recipe-btn">
             <mat-icon>add_circle</mat-icon>
             Nueva receta
           </button>
@@ -225,7 +231,7 @@
 
         <!-- Rating móvil -->
         <div class="mobile-rating-section">
-          <h3 class="mobile-section-title">Calificar receta</h3>
+          <h3 class="mobile-section-title">Calificar experiencia</h3>
           <div class="mobile-rating-content">
             <star-rating (ratingSubmitted)="onRatingSelected($event)"></star-rating>
           </div>
@@ -234,6 +240,6 @@
     </mat-card>
   </div>
 
-  <!-- FOOTER (Opcional) -->
+  <!-- FOOTER -->
   <app-footer-tabs #footer *ngIf="showFooter"></app-footer-tabs>
 </ion-content>
